@@ -1,0 +1,9 @@
+- task_key: "your-task-03"
+        job_cluster_key: "basic-cluster"
+        notebook_task:
+          notebook_path: "/Repos/some/project/notebook"
+          base_parameters:
+            param1: "param1-value"
+            param2: "param2-value"
+        depends_on:
+          - task_key: "your-task-01"
