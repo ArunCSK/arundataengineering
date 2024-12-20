@@ -10,13 +10,15 @@ def parse(io):
 
 def part1(cards):
     total_points = 0
-
-    for card in cards:
+    lines = cards.split("\n")
+    for l in lines:
+        card_no = (l.split(":")[0]).split(" ")[1]
         # Split the card into winning numbers and numbers you have
-        left, right = card.split(" | ")
+        left = (l.split(" | ")[0]).split(":")[1]
+        right = l.split(" | ")[1]
         winning_numbers = set(map(int, left.split()))
         your_numbers = list(map(int, right.split()))
-        print(winning_numbers, your_numbers)
+        # print(winning_numbers, your_numbers)
 
         # Determine matches and calculate points
         points = 0
@@ -32,9 +34,10 @@ def part1(cards):
     return total_points
 
 
-# def part2(data):
-#     """Solve part 2."""
-#     return p2
+def part2(data):
+    """Solve part 2."""
+    p2 = 0
+    return p2
 
 
 def solve(io):
@@ -42,8 +45,8 @@ def solve(io):
     data = parse(io)
     # print(data)
     solution1 = part1(data)
-    # solution2 = part2(data)
-    # return solution1, solution2
+    solution2 = part2(data)
+    return solution1, solution2
 
 
 if __name__ == "__main__":
@@ -52,4 +55,4 @@ if __name__ == "__main__":
     puzzle_input = pathlib.Path(path).read_text().strip().lstrip()
     # print(puzzle_input)
     solutions = solve(puzzle_input)
-    # print("\n".join(str(solution) for solution in solutions))
+    print("\n".join(str(solution) for solution in solutions))
