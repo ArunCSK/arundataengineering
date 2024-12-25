@@ -1,5 +1,5 @@
 import pathlib
-from collections import defaultdict
+from collections import defaultdict, deque
 
 
 def parse(io):
@@ -10,7 +10,7 @@ def parse(io):
 
 def part1(data):
     total_points = 0
-    page_order , page_update = data.split("\n\n")
+    page_order, page_update = data.split("\n\n")
     # Parse ordering rules
     rules = []
     for line in page_order.splitlines():
@@ -37,10 +37,66 @@ def part1(data):
     return total_points
 
 
+def build_graph(rules):
+    graph = defaultdict(list)
+    for x, y in rules:
+        graph[x].append(y)
+    return graph
+
+
+def is_valid_order(update, graph):
+    position = {page: i for i, page in enumerate(update)}
+    for x in update:
+        for y in graph[x]:
+            if y in position and position[x] > position[y]:
+                return False
+    return True
+
+def topological_sort(update, graph):
+    indegree = {page: 0 for page in update}
+    for x in update:
+        for y in graph[x]:
+            if y in indegree:
+                indegree[y] += 1
+
+    queue = deque([node for node in update if indegree[node] == 0])
+    sorted_order = []
+
+    while queue:
+        current = queue.popleft()
+        sorted_order.append(current)
+        for neighbor in graph[current]:
+            if neighbor in indegree:
+                indegree[neighbor] -= 1
+                if indegree[neighbor] == 0:
+                    queue.append(neighbor)
+
+    return sorted_order
 def part2(data):
     """Solve part 2."""
     total_points = 0
+    sections = data.strip().split("\n\n")
+    rules = [tuple(map(int, line.split('|'))) for line in sections[0].splitlines()]
+    updates = [list(map(int, line.split(','))) for line in sections[1].splitlines()]
+    graph = build_graph(rules)
+    fix_invalid = True
+    for update in updates:
+        if not is_valid_order(update, graph):
+            if fix_invalid:
+                update = topological_sort(update, graph)
+        else:
+            if not fix_invalid:
+                middle_page = update[len(update) // 2]
+                total_points += middle_page
 
+    if fix_invalid:
+        for update in updates:
+            if not is_valid_order(update, graph):
+                update = topological_sort(update, graph)
+                middle_page = update[len(update) // 2]
+                total_points += middle_page
+
+    # print(graph)
 
     return total_points
 
